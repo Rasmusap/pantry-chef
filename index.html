@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en" data-look="fresh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bentes køkken</title>
+  <meta name="description" content="Cook from what you have and keep track of leftovers. Recipes in English and Danish, works offline.">
+  <meta name="theme-color" content="#f4f7f1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Bentes køkken">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://rasmusap.github.io; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Text marked data-i18n / data-i18n-ph / data-i18n-aria is filled in from i18n.js in the chosen language. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-pantry" viewBox="0 0 24 24"><path d="M8 3h8v3H8z"/><rect x="5.5" y="6" width="13" height="15" rx="2.5"/><path d="M9 12h6M9 16h4"/></symbol>
+      <symbol id="i-recipes" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z"/></symbol>
+      <symbol id="i-leftovers" viewBox="0 0 24 24"><path d="M2.5 6.5h19v3h-19z"/><path d="M4 9.5h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M10 13.5h4"/></symbol>
+      <symbol id="i-shopping" viewBox="0 0 24 24"><path d="M2.5 4h2.2l2.3 11h11.2l2.2-8H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h9M18 6h2M4 12h3M12 12h8M4 18h11"/><circle cx="15.5" cy="6" r="2.2"/><circle cx="9.5" cy="12" r="2.2"/><circle cx="17.5" cy="18" r="2.2"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="top">
+    <div class="brand">
+      <img class="logo" src="icons/icon-192.png" alt="" width="44" height="44">
+      <div>
+        <p class="name">Bentes køkken</p>
+        <p class="tag" data-i18n="tagline">Cook from what you have. Keep track of what's left.</p>
+      </div>
+    </div>
+    <button id="lang-toggle" class="btn ghost small lang-toggle" type="button"></button>
+  </header>
+
+  <nav class="tabs" role="tablist" data-i18n-aria="tabsLabel" aria-label="Sections">
+    <button role="tab" id="tab-pantry" aria-controls="panel-pantry" aria-selected="true"><svg class="ti" aria-hidden="true"><use href="#i-pantry"/></svg><span class="tl" data-i18n="tabPantry">Ingredients</span><span class="count" id="count-pantry"></span></button>
+    <button role="tab" id="tab-recipes" aria-controls="panel-recipes" aria-selected="false" tabindex="-1"><svg class="ti" aria-hidden="true"><use href="#i-recipes"/></svg><span class="tl" data-i18n="tabRecipes">Recipes</span><span class="count" id="count-recipes"></span></button>
+    <button role="tab" id="tab-leftovers" aria-controls="panel-leftovers" aria-selected="false" tabindex="-1"><svg class="ti" aria-hidden="true"><use href="#i-leftovers"/></svg><span class="tl" data-i18n="tabLeftovers">Leftovers</span><span class="count" id="count-left"></span></button>
+    <button role="tab" id="tab-shopping" aria-controls="panel-shopping" aria-selected="false" tabindex="-1"><svg class="ti" aria-hidden="true"><use href="#i-shopping"/></svg><span class="tl" data-i18n="tabShopping">Shopping</span><span class="count" id="count-shop"></span></button>
+    <button role="tab" id="tab-settings" aria-controls="panel-settings" aria-selected="false" tabindex="-1"><svg class="ti" aria-hidden="true"><use href="#i-settings"/></svg><span class="tl" data-i18n="tabSettings">Settings</span></button>
+  </nav>
+
+  <main>
+    <!-- INGREDIENTS -->
+    <section id="panel-pantry" role="tabpanel" aria-labelledby="tab-pantry">
+      <h1 class="panel-title" data-i18n="pantryTitle">What's in your kitchen?</h1>
+      <form id="add-form" class="card add" autocomplete="off">
+        <label for="add-input" data-i18n="addLabel">Add ingredients</label>
+        <div class="row">
+          <input id="add-input" aria-describedby="add-error" data-i18n-ph="addPh" placeholder="e.g. 500g pasta, 4 eggs, broccoli" enterkeyhint="done" autocapitalize="none">
+          <button class="btn primary" type="submit" data-i18n="addBtn">Add</button>
+        </div>
+        <p class="field-error" id="add-error" role="alert" data-i18n="addEmpty" hidden>Type at least one ingredient first.</p>
+        <p class="hint" data-i18n="addHint">Separate with commas.</p>
+      </form>
+      <div class="quick"><span data-i18n="quickAdd">Quick add:</span><span id="quick" class="quick-list"></span></div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="yourPantry">Your pantry</h2>
+          <button id="clear-pantry" class="btn ghost small" type="button" data-i18n="clearAll">Clear all</button>
+        </div>
+        <ul id="pantry-list" class="pantry"></ul>
+        <p class="hint staples" data-i18n="staples">Always assumed: salt, pepper, oil and water.</p>
+      </div>
+      <div class="cta-row"><button id="go-recipes" class="btn primary big" type="button" data-i18n="findRecipes">Find recipes →</button></div>
+    </section>
+
+    <!-- RECIPES -->
+    <section id="panel-recipes" role="tabpanel" aria-labelledby="tab-recipes" hidden>
+      <h1 class="panel-title" data-i18n="recipesTitle">What can you cook?</h1>
+      <section id="meal-now" class="card meal-now" aria-labelledby="meal-now-title" hidden></section>
+      <div class="card create">
+        <div>
+          <h2 data-i18n="createTitle">Create something new</h2>
+          <p data-i18n="createText">Invent a recipe from only what's in your pantry and leftovers.</p>
+        </div>
+        <button id="create-btn" class="btn primary" type="button" data-i18n="createBtn">✨ Create a recipe</button>
+      </div>
+      <div class="filters">
+        <h2 data-i18n="suggestions">Suggestions</h2>
+        <div class="filter-controls">
+          <input id="recipe-search" type="search" data-i18n-ph="searchPh" data-i18n-aria="searchPh" placeholder="Search recipes" aria-label="Search recipes" enterkeyhint="search">
+          <label class="check"><input type="checkbox" id="only-ready"> <span data-i18n="onlyReady">Only show what I can make now (missing at most 1)</span></label>
+        </div>
+      </div>
+      <div class="tag-chips" id="tag-chips" role="group" data-i18n-aria="filterLabel" aria-label="Filter recipes"></div>
+      <details class="diet-legend" id="diet-legend"></details>
+      <div id="recipe-grid" class="grid"></div>
+    </section>
+
+    <!-- LEFTOVERS -->
+    <section id="panel-leftovers" role="tabpanel" aria-labelledby="tab-leftovers" hidden>
+      <h1 class="panel-title" data-i18n="leftoversTitle" tabindex="-1">Leftovers</h1>
+      <div id="last-cook"></div>
+
+      <div class="card">
+        <div class="card-head"><h2 data-i18n="leftoverDishes">Leftover dishes</h2><span class="pill" id="servings-total"></span></div>
+        <ul id="leftover-list" class="leftovers"></ul>
+        <form id="leftover-form" class="leftover-form" autocomplete="off">
+          <p class="form-title" data-i18n="addByHand">Add a leftover by hand</p>
+          <div class="row wrap">
+            <label><span data-i18n="dish">Dish</span> <input id="lo-name" required maxlength="80" data-i18n-ph="dishPh" placeholder="e.g. Chili, cooked rice"></label>
+            <label class="narrow"><span data-i18n="servings">Servings</span> <input id="lo-servings" type="number" inputmode="decimal" min="0.5" max="50" step="0.5" value="2" required></label>
+            <label class="narrow"><span data-i18n="cookedOn">Cooked on</span> <input id="lo-date" type="date" required></label>
+            <button class="btn" type="submit" data-i18n="addLeftover">Add leftover</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2 data-i18n="cookingLog">Cooking log</h2><button id="clear-log" class="btn ghost small" type="button" data-i18n="clearLog">Clear log</button></div>
+        <ul id="log-list" class="log"></ul>
+      </div>
+    </section>
+
+    <!-- SHOPPING -->
+    <section id="panel-shopping" role="tabpanel" aria-labelledby="tab-shopping" hidden>
+      <h1 class="panel-title" data-i18n="shoppingTitle">Shopping list</h1>
+      <form id="shop-form" class="card add" autocomplete="off">
+        <label for="shop-input" data-i18n="shopAddLabel">Add to the list</label>
+        <div class="row">
+          <input id="shop-input" data-i18n-ph="shopPh" placeholder="e.g. 1 l milk, bread" enterkeyhint="done" autocapitalize="none">
+          <button class="btn primary" type="submit" data-i18n="addBtn">Add</button>
+        </div>
+      </form>
+      <div class="card">
+        <ul id="shop-list" class="shop"></ul>
+        <div class="shop-actions">
+          <button id="shop-move" class="btn primary" type="button" data-i18n="moveToPantry">Move ticked items to pantry</button>
+          <button id="shop-share" class="btn" type="button" data-i18n="shareList">Share list</button>
+          <button id="shop-clear" class="btn ghost" type="button" data-i18n="clearTicked">Remove ticked</button>
+        </div>
+      </div>
+
+      <section class="card" id="offers-card" aria-label="Offers" hidden></section>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <h1 class="panel-title" data-i18n="settingsTitle">Settings</h1>
+      <div class="card settings">
+        <fieldset class="seg langs">
+          <legend data-i18n="language">Language</legend>
+          <label><input type="radio" name="lang" value="en"><span lang="en">English</span></label>
+          <label><input type="radio" name="lang" value="da"><span lang="da">Dansk</span></label>
+        </fieldset>
+        <fieldset class="seg looks">
+          <legend data-i18n="look">Appearance</legend>
+          <label><input type="radio" name="look" value="auto"><span data-i18n="lookAuto">Automatic</span></label>
+          <label><input type="radio" name="look" value="fresh"><span data-i18n="lookFresh">Fresh market</span></label>
+          <label><input type="radio" name="look" value="diner"><span data-i18n="lookDiner">Retro diner</span></label>
+          <label><input type="radio" name="look" value="midnight"><span data-i18n="lookMidnight">Midnight</span></label>
+        </fieldset>
+        <label class="inline-select"><span data-i18n="keepDays">Keep cooked leftovers for</span> <select id="keep-days"></select></label>
+        <div class="setting-block">
+          <label class="check"><input type="checkbox" id="time-aware" aria-describedby="time-aware-hint"> <span data-i18n="timeAwareToggle">Suggest recipes for the time of day</span></label>
+          <p class="hint" id="time-aware-hint" data-i18n="timeAwareHint">Uses the clock on your device — your location is never used.</p>
+        </div>
+        <div class="setting-block">
+          <label class="check"><input type="checkbox" id="offers-on" aria-describedby="offers-hint"> <span data-i18n="offersToggle">Show supermarket offers</span></label>
+          <p class="hint" id="offers-hint" data-i18n="offersHint">Downloads a list of this week's offers. Nothing about you is sent.</p>
+        </div>
+        <label class="check" id="reminders-row" hidden><input type="checkbox" id="reminders"> <span data-i18n="remindToggle">Remind me on the eat-by day of leftovers</span></label>
+      </div>
+
+      <div class="card" id="install-card" hidden>
+        <h2 data-i18n="installTitle">Put it on your phone</h2>
+        <p data-i18n="installIos">iPhone: open this page in Safari, tap Share, then “Add to Home Screen”.</p>
+        <p data-i18n="installAndroid">Android: open the browser menu and tap “Install app”.</p>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="dataTitle">Your data</h2>
+        <p class="sub" data-i18n="dataText">Everything is saved on this device only.</p>
+        <div class="row wrap">
+          <button id="export-btn" class="btn" type="button" data-i18n="exportBtn">Save a backup</button>
+          <button id="import-btn" class="btn" type="button" data-i18n="importBtn">Restore a backup</button>
+          <button id="erase-btn" class="btn danger" type="button" data-i18n="eraseBtn">Erase all data</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="aboutTitle">About</h2>
+        <p class="sub" id="version"></p>
+        <p class="sub" data-i18n="aboutText">Recipes are general home-cooking guidance.</p>
+        <p><a id="privacy-link" href="privacy.html" data-i18n="privacyLink">Privacy policy</a></p>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="recipe-dialog" aria-labelledby="dlg-title">
+    <div id="dialog-body"></div>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="confirm" aria-labelledby="confirm-text">
+    <form method="dialog">
+      <p id="confirm-text"></p>
+      <div class="row wrap confirm-actions">
+        <button id="confirm-cancel" class="btn" value="cancel">Cancel</button>
+        <button id="confirm-ok" class="btn primary" value="ok">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="sr-status" class="sr-only" aria-live="polite"></div>
+  <div id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-undo" class="toast-btn" type="button" hidden></button></div>
+
+  <script src="data.js"></script>
+  <script src="i18n.js"></script>
+  <script src="recipes/words.js"></script>
+  <script src="recipes/batch-1.js"></script>
+  <script src="recipes/batch-2.js"></script>
+  <script src="recipes/batch-3.js"></script>
+  <script src="recipes/batch-4.js"></script>
+  <script src="recipes/batch-5.js"></script>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
